@@ -8,9 +8,9 @@ Aqui utilizamos o modelo pré‑treinado **MobileNetV2** para classificar imagen
 ## 🧠 Objetivo
 
 - Baixar automaticamente um grande volume de imagens de 10 marcas populares (Ferrari, Lamborghini, Porsche, BMW, Audi, Mercedes, Tesla, Toyota, Ford e Volkswagen).  
-- Organizar estas imagens em **treino**, **validação** e **teste** (70/15/15).  
-- Treinar e fazer fine‑tuning de um classificador MobileNetV2.  
-- Avaliar o desempenho e servir predições em imagens avulsas.
+- Organizar estas imagens em **train**, **val** e **test** (70 % / 15 % / 15 %).  
+- Treinar o modelo e fazer fine‑tuning de um classificador baseado em MobileNetV2.  
+- Avaliar o desempenho e servir predições em imagens individuais.
 
 ---
 
@@ -25,92 +25,92 @@ Aqui utilizamos o modelo pré‑treinado **MobileNetV2** para classificar imagen
 
 ## 📁 Estrutura do Projeto
 
-\`\`\`
+```
 /
-├── dataset/  
-│   ├── train/               # Imagens de treino organizadas por classe  
-│   │   ├── audi/  
-│   │   ├── bmw/  
-│   │   ├── ferrari/  
-│   │   ├── ford/  
-│   │   ├── lamborghini/  
-│   │   ├── mercedes/  
-│   │   ├── porsche/  
-│   │   ├── tesla/  
-│   │   ├── toyota/  
-│   │   └── volkswagen/  
-│   ├── val/                 # Imagens de validação  
-│   │   └── (mesma estrutura acima)  
-│   └── test/                # Imagens de teste  
-│       └── (mesma estrutura acima)  
+├── dataset/
+│   ├── train/            # Imagens de treino organizadas por classe
+│   │   ├── audi/
+│   │   ├── bmw/
+│   │   ├── ferrari/
+│   │   ├── ford/
+│   │   ├── lamborghini/
+│   │   ├── mercedes/
+│   │   ├── porsche/
+│   │   ├── tesla/
+│   │   ├── toyota/
+│   │   └── volkswagen/
+│   ├── val/              # Imagens de validação (mesma estrutura acima)
+│   └── test/             # Imagens de teste (mesma estrutura acima)
 │
-├── download_and_split.py    # Script Python para baixar e organizar as imagens  
-├── img_classifier.ipynb     # Notebook de treino, fine‑tuning e avaliação  
-└── README.md                # Este arquivo  
-\`\`\`
+├── download_and_split.py # Script Python para baixar e organizar as imagens
+├── img_classifier.ipynb  # Notebook de treino, fine‑tuning e avaliação
+└── README.md             # Este arquivo
+```
 
 ---
 
 ## ▶️ Como Executar
 
 1. **Clone o repositório**  
-   \`\`\`bash
+   ```bash
    git clone https://github.com/seu-usuario/nome-do-repo.git
    cd nome-do-repo
-   \`\`\`
+   ```
 
-2. **Configure ambiente** (opcional mas recomendado)  
-   \`\`\`bash
-   python -m venv vvenv
-   source venv/bin/activate        # Linux / macOS  
-   venv\Scripts\activate         # Windows
+2. **Configure o ambiente** (opcional, mas recomendado)  
+   ```bash
+   python -m venv venv
+   # Linux / macOS
+   source venv/bin/activate
+   # Windows
+   venv\Scripts\activate
    pip install -r requirements.txt
-   \`\`\`
+   ```
 
-3. **Baixe e organize imagens**  
-   \`\`\`bash
+3. **Baixe e organize as imagens**  
+   ```bash
    python download_and_split.py
-   \`\`\`
+   ```
 
 4. **Treine o modelo**  
-   - Abra \`img_classifier.ipynb\` no Jupyter Notebook:  
-     \`\`\`bash
+   - Abra o notebook:  
+     ```bash
      jupyter notebook img_classifier.ipynb
-     \`\`\`
-   - Execute as células de:  
+     ```
+   - Execute as células na ordem:  
      1. Preparação do MobileNetV2 (backbone + cabeça personalizada)  
-     2. Compilação, data augmentation e geradores de dados  
+     2. Compilação, data augmentation e criação dos geradores  
      3. Treinamento inicial (10 épocas)  
      4. Fine‑tuning (5 épocas)
 
 5. **Teste individual de imagens**  
-   No final do notebook há a função:  
-   \`\`\`python
+   No final do notebook há a função:
+   ```python
    predict_and_show("dataset/test/bmw/000002.jpg")
-   \`\`\`
+   ```
 
 ---
 
-## 🖼️ O que esperar
+## 🖼️ Saída Esperada
 
 - **Treino / Validação**:  
-  Métricas de acurácia e loss ao longo das épocas, com callbacks opcionais de _EarlyStopping_ e _ModelCheckpoint_ para salvar o melhor modelo.  
+  Curvas de acurácia e loss ao longo das épocas, com uso opcional de callbacks (_EarlyStopping_, _ModelCheckpoint_).  
 - **Test set**:  
-  Avaliação final (loss e accuracy) em \`dataset/test/\`, geração de matriz de confusão e relatório de classificação.  
+  Métricas finais (loss e accuracy) em `dataset/test/`, matriz de confusão e relatório de classificação.  
 - **Predição individual**:  
-  Visualização da imagem + label prevista e confiança.
+  Visualização da imagem e label prevista com probabilidade.
 
 ---
 
 ## 🚀 Possíveis Melhorias
 
-- Aumentar / filtrar mais imagens para cada classe  
-- Augmentations avançados (MixUp, CutMix, Albumentations)  
-- Testar outras backbones (EfficientNet, ResNet)  
-- Agendar callbacks de _ReduceLROnPlateau_, _CosineDecay_  
-- Analisar Grad‑CAM para entender o foco do modelo  
+- Aumentar o número de imagens por classe  
+- Augmentations avançados (_MixUp_, _CutMix_, _Albumentations_)  
+- Testar outras backbones (EfficientNet, ResNet…)  
+- Usar _ReduceLROnPlateau_, _CosineDecay_ para agendamento de learning rate  
+- Analisar Grad‑CAM para entender onde o modelo focaliza a imagem  
 
 ---
 
 **Desenvolvido por Guilherme Caldas**  
-MBA em BI & Data Science, Ibmec
+MBA em BI & Data Science, Ibmec  
