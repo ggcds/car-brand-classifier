@@ -1,0 +1,18 @@
+# Deep learning framework
+tensorflow>=2.9.0
+
+# Data handling & visualização
+numpy>=1.21.0
+matplotlib>=3.5.0
+
+# Crawler de imagens
+icrawler>=0.7.5
+
+# Métricas e análises
+scikit‑learn>=1.0.0
+
+# Para executar notebooks
+jupyter>=1.0.0
+
+# Suporte a imagens (usado por Keras/Matplotlib)
+Pillow>=9.0.0
