@@ -1,116 +1,84 @@
-# Classificação de Marcas de Carro com MobileNetV2
+# Car Brand Classifier (MobileNetV2)
 
-Projeto desenvolvido como parte da disciplina **Resolução de Problemas com Deep Learning** do MBA em BI & Data Science, Ibmec.  
-Aqui utilizamos o modelo pré‑treinado **MobileNetV2** para classificar imagens de 10 marcas de carro.
+Image classifier for 10 car brands, built with transfer learning on **MobileNetV2**.
+Developed for the *Problem Solving with Deep Learning* course of the MBA in BI & Data Science at Ibmec.
 
----
+## Overview
 
-## 🧠 Objetivo
+The notebook `img_classifier.ipynb` covers the whole pipeline:
 
-- Baixar automaticamente um grande volume de imagens de 10 marcas populares (Ferrari, Lamborghini, Porsche, BMW, Audi, Mercedes, Tesla, Toyota, Ford e Volkswagen).  
-- Organizar estas imagens em **train**, **val** e **test** (70 % / 15 % / 15 %).  
-- Treinar o modelo e fazer fine‑tuning de um classificador baseado em MobileNetV2.  
-- Avaliar o desempenho e servir predições em imagens individuais.
+1. **Data collection** – downloads up to 1,000 images per brand with `icrawler` (Google Images) and splits them into `train` / `val` / `test` (70% / 15% / 15%).
+2. **Model** – MobileNetV2 pre-trained on ImageNet (frozen backbone) + `GlobalAveragePooling2D` → `Dense(128, relu)` → `Dropout(0.5)` → `Dense(10, softmax)`.
+3. **Training** – 10 epochs with the backbone frozen, using data augmentation (rotation, shifts, shear, zoom, horizontal flip).
+4. **Fine-tuning** – the backbone is unfrozen (first 100 layers kept frozen) and trained for 5 more epochs with `Adam(1e-5)`.
+5. **Inference** – `predict_image(path)` prints the predicted brand and its probability for a single image.
 
----
+**Brands:** Audi, BMW, Ferrari, Ford, Lamborghini, Mercedes, Porsche, Tesla, Toyota, Volkswagen.
 
-## 🔧 Tecnologias
+## Tech stack
 
-- Python 3.x  
-- TensorFlow / Keras  
-- icrawler (GoogleImageCrawler)  
-- Matplotlib, NumPy, scikit‑learn  
+- Python 3, TensorFlow / Keras
+- icrawler (image download)
+- NumPy, Matplotlib
 
----
-
-## 📁 Estrutura do Projeto
+## Project structure
 
 ```
-/
-├── dataset/
-│   ├── train/            # Imagens de treino organizadas por classe
-│   │   ├── audi/
-│   │   ├── bmw/
-│   │   ├── ferrari/
-│   │   ├── ford/
-│   │   ├── lamborghini/
-│   │   ├── mercedes/
-│   │   ├── porsche/
-│   │   ├── tesla/
-│   │   ├── toyota/
-│   │   └── volkswagen/
-│   ├── val/              # Imagens de validação (mesma estrutura acima)
-│   └── test/             # Imagens de teste (mesma estrutura acima)
-│
-├── download_and_split.py # Script Python para baixar e organizar as imagens
-├── img_classifier.ipynb  # Notebook de treino, fine‑tuning e avaliação
-└── README.md             # Este arquivo
+.
+├── img_classifier.ipynb   # Download, training, fine-tuning and inference
+├── requirements.txt
+├── LICENSE
+└── README.md
 ```
 
----
+The `dataset/` folder is created by the notebook and is not versioned:
 
-## ▶️ Como Executar
+```
+dataset/
+├── train/<brand>/
+├── val/<brand>/
+└── test/<brand>/
+```
 
-1. **Clone o repositório**  
-   ```bash
-   git clone https://github.com/seu-usuario/nome-do-repo.git
-   cd nome-do-repo
-   ```
+## Getting started
 
-2. **Configure o ambiente** (opcional, mas recomendado)  
-   ```bash
-   python -m venv venv
-   # Linux / macOS
-   source venv/bin/activate
-   # Windows
-   venv\Scripts\activate
-   pip install -r requirements.txt
-   ```
+```bash
+git clone https://github.com/ggcds/car-brand-classifier.git
+cd car-brand-classifier
 
-3. **Baixe e organize as imagens**  
-   ```bash
-   python download_and_split.py
-   ```
+python -m venv venv
+source venv/bin/activate        # Windows: venv\Scripts\activate
+pip install -r requirements.txt
 
-4. **Treine o modelo**  
-   - Abra o notebook:  
-     ```bash
-     jupyter notebook img_classifier.ipynb
-     ```
-   - Execute as células na ordem:  
-     1. Preparação do MobileNetV2 (backbone + cabeça personalizada)  
-     2. Compilação, data augmentation e criação dos geradores  
-     3. Treinamento inicial (10 épocas)  
-     4. Fine‑tuning (5 épocas)
+jupyter notebook img_classifier.ipynb
+```
 
-5. **Teste individual de imagens**  
-   No final do notebook há a função:
-   ```python
-   predict_and_show("dataset/test/bmw/000002.jpg")
-   ```
+Run the cells in order. The first cell downloads and organizes the images (this can take a while and depends on Google Images availability).
 
----
+Example of single-image inference (last cell):
 
-## 🖼️ Saída Esperada
+```python
+predict_image("dataset/test/toyota/000020.png")
+```
 
-- **Treino / Validação**:  
-  Curvas de acurácia e loss ao longo das épocas, com uso opcional de callbacks (_EarlyStopping_, _ModelCheckpoint_).  
-- **Test set**:  
-  Métricas finais (loss e accuracy) em `dataset/test/`, matriz de confusão e relatório de classificação.  
-- **Predição individual**:  
-  Visualização da imagem e label prevista com probabilidade.
+## Notes
 
----
+- Images are scraped from the web, so the dataset is noisy (wrong brands, interiors, logos). This limits the achievable accuracy.
+- The dataset is not redistributed in this repository.
 
-## 🚀 Possíveis Melhorias
+## Possible improvements
 
-- Aumentar o número de imagens por classe  
-- Augmentations avançados (_MixUp_, _CutMix_, _Albumentations_)  
-- Testar outras backbones (EfficientNet, ResNet…)  
-- Usar _ReduceLROnPlateau_, _CosineDecay_ para agendamento de learning rate  
-- Analisar Grad‑CAM para entender onde o modelo focaliza a imagem  
+- More and cleaner images per class
+- Advanced augmentation (MixUp, CutMix, Albumentations)
+- Other backbones (EfficientNet, ResNet)
+- Learning-rate scheduling (`ReduceLROnPlateau`, cosine decay) and callbacks (`EarlyStopping`, `ModelCheckpoint`)
+- Confusion matrix and per-class metrics on the test set
+- Grad-CAM to inspect what the model focuses on
 
----
+## Author
 
-**Desenvolvido por Guilherme Caldas**  
-MBA em BI & Data Science, Ibmec  
+**Guilherme Barros Caldas** – MBA in BI & Data Science, Ibmec
+
+## License
+
+[MIT](LICENSE)
